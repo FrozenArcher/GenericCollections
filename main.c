@@ -23,6 +23,7 @@ void DisplayIntArr(GC_Array *arr) {
     } else {
         for (int i = 0; i < arr->len; i++) {
             Int *item = GC_ArrayGet(arr, i, NULL);
+            //Int *item = *(arr->buffer[i]);
             if (i == arr->len - 1) {
                 printf("%d]\n", (*item).val);
             } else {

@@ -53,7 +53,7 @@ void GC_ArrayRemove(GC_Array *array, void **item, GC_Status *stat) {
 void *GC_ArrayGet(GC_Array *array, int index, GC_Status *stat) {
     if (0 <= index && index < array->len) {
         if (stat != NULL) *stat = GC_STAT_OK;
-        return array->buffer + index;
+        return *(array->buffer + index);
     } else {
         if (stat != NULL) *stat = GC_STAT_INDEX_OUT_OF_RANGE;
         return NULL;
