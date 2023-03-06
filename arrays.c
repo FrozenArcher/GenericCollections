@@ -4,33 +4,41 @@
 
 #include "arrays.h"
 
-#define SET_STAT(stat, value) if (stat != NULL) *stat = (value);
+static GC_Status g_status;
 
-GC_Array *GC_NewArray(int n, GC_Status *stat) {
+const GC_Status GC_GetStatus() {
+    return g_status;
+}
+
+static inline void set_stat(GC_Status stat) {
+    g_status = stat;
+}
+
+GC_Array *GC_NewArray(int n) {
     GC_Array *newArray = malloc(sizeof(GC_Array));
     void **initBuffer = malloc(sizeof(void *) * n);
     newArray->buffer = initBuffer;
     newArray->cap = n;
     newArray->len = 0;
-    SET_STAT(stat, GC_STAT_OK);
+    set_stat(GC_STAT_OK);
     return newArray;
 }
 
-void GC_ArrayFree(GC_Array *array, GC_Status *stat) {
-    GC_ArrayFreeWith(array, free, stat);
+void GC_ArrayFree(GC_Array *array) {
+    GC_ArrayFreeWith_Raw(array, free);
 }
 
-void GC_ArrayFreeWith(GC_Array *array, void (*mem_free)(void *), GC_Status *stat) {
+void GC_ArrayFreeWith_Raw(GC_Array *array, void (*mem_free)(void *)) {
     for (int i = 0; i < array->len; i++) {
         mem_free(array->buffer[i]);
     }
     free(array->buffer);
     free(array);
     array = NULL;
-    SET_STAT(stat, GC_STAT_OK);
+    set_stat(GC_STAT_OK);
 }
 
-void GC_ArrayAppend(GC_Array *array, void *item, GC_Status *stat) {
+void GC_ArrayAppend(GC_Array *array, void *item) {
     if (array->len + 1 > array->cap) {
         void **newBuffer = malloc(sizeof(void *) * array->cap * 2);
         memcpy(newBuffer, array->buffer, sizeof(void *) * array->len);
@@ -40,36 +48,35 @@ void GC_ArrayAppend(GC_Array *array, void *item, GC_Status *stat) {
     }
     array->buffer[array->len] = item;
     array->len++;
-    SET_STAT(stat, GC_STAT_OK);
+    set_stat(GC_STAT_OK);
 }
 
-void GC_ArrayRemove(GC_Array *array, void *item, GC_Status *stat) {
-    GC_ArrayRemoveWith(array, item, free, stat);
+void GC_ArrayRemove(GC_Array *array, void *item) {
+    GC_ArrayRemoveWith(array, item, free);
 }
 
-void GC_ArrayRemoveWith(GC_Array *array, void *item, void (*mem_free)(void *), GC_Status *stat) {
-    GC_Status id_stat;
-    int id = GC_ArrayFindIndex(array, item, &id_stat);
+void GC_ArrayRemoveWith_Raw(GC_Array *array, void *item, void (*mem_free)(void *)) {
+    int id = GC_ArrayFindIndex(array, item);
 
-    if (id_stat == GC_STAT_OK) {
+    if (GC_GetStatus() == GC_STAT_OK) {
         mem_free(item);
         for (int i = id + 1; i < array->len; i++) {
             array->buffer[i - 1] = array->buffer[i];
         }
         array->len--;
-        SET_STAT(stat, GC_STAT_OK);
+        set_stat(GC_STAT_OK);
     } else {
         printf("OUT\n");
-        SET_STAT(stat, GC_STAT_INDEX_OUT_OF_RANGE);
+        set_stat(GC_STAT_INDEX_OUT_OF_RANGE);
     }
 }
 
-void *GC_ArrayGet(GC_Array *array, int index, GC_Status *stat) {
+void *GC_ArrayGet(GC_Array *array, int index) {
     if (0 <= index && index < array->len) {
-        SET_STAT(stat, GC_STAT_OK);
+        set_stat(GC_STAT_OK);
         return *(array->buffer + index);
     } else {
-        SET_STAT(stat, GC_STAT_INDEX_OUT_OF_RANGE);
+        set_stat(GC_STAT_INDEX_OUT_OF_RANGE);
         return NULL;
     }
 }
@@ -85,7 +92,7 @@ void GC_ArrayPrint_Raw(GC_Array *array, void (*str)(void*, char*), int endline, 
         printf("]");
     } else {
         for (int i = 0; i < array->len; i++) {
-            item = GC_ArrayGet(array, i, NULL);
+            item = GC_ArrayGet(array, i);
             if (i == array->len - 1) {
                 str(item, buffer);
                 printf("%s]", buffer);
@@ -100,7 +107,7 @@ void GC_ArrayPrint_Raw(GC_Array *array, void (*str)(void*, char*), int endline, 
     }
 }
 
-int GC_ArrayFindIndex(GC_Array *array, void *item, GC_Status *stat) {
+int GC_ArrayFindIndex(GC_Array *array, void *item) {
     int id = -1;
     for (int i = 0; i < array->len; i++) {
         if (array->buffer[i] == item) {
@@ -109,9 +116,9 @@ int GC_ArrayFindIndex(GC_Array *array, void *item, GC_Status *stat) {
         }
     }
     if (id == -1) {
-        SET_STAT(stat, GC_STAT_INDEX_OUT_OF_RANGE);
+        set_stat(GC_STAT_INDEX_OUT_OF_RANGE);
     } else {
-        SET_STAT(stat, GC_STAT_OK);
+        set_stat(GC_STAT_OK);
     }
     return id;
 }
