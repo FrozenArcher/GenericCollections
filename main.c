@@ -45,7 +45,7 @@ int main() {
     GC_ArrayPrintlnInfo(intArray, IntToString);
     for (int i = 1; i <= 40; i++) {
         Int *newInt = NewInt(i);
-        printf("Append: NewInt.val = %d\n", (*newInt).val);
+        printf("Append: NewInt.val = %d\n", newInt->val);
         GC_ArrayAppend(intArray, newInt);
         GC_ArrayPrintlnInfo(intArray, IntToString);
     }
