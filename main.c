@@ -62,6 +62,10 @@ int main() {
     printf("Got: \"%s\" @ %d\n", bestStr->string, GC_ArrayFindIndex(strings, bestStr, NULL));
     GC_ArrayRemoveWith(strings, bestStr, (void(*)(void*))(FreeStr), NULL);
     GC_ArrayPrintlnInfo(strings, StringToStr);
+    GC_ArrayAppend(strings, NewStr("worst"), NULL);
+    GC_ArrayPrintlnInfo(strings, StringToStr);
+    GC_ArrayRemoveWith(strings, GC_ArrayGet(strings, 0, NULL), (void(*)(void*))(FreeStr), NULL);
+    GC_ArrayPrintlnInfo(strings, StringToStr);
 
     GC_ArrayFreeWith(strings, (void(*)(void*))(FreeStr), NULL);
 }

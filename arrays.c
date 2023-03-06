@@ -103,7 +103,7 @@ void GC_ArrayPrint_Raw(GC_Array *array, void (*str)(void*, char*), int endline, 
 int GC_ArrayFindIndex(GC_Array *array, void *item, GC_Status *stat) {
     int id = -1;
     for (int i = 0; i < array->len; i++) {
-        if (array->buffer[i] == &item) {
+        if (array->buffer[i] == item) {
             id = i;
             break;
         }
