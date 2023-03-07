@@ -1,16 +1,18 @@
 #ifndef GC_ARRAYS_H
 #define GC_ARRAYS_H
 
-typedef enum GA_Status {
-    GA_STAT_OK,
-    GA_STAT_INDEX_OUT_OF_RANGE,
-    GA_STAT_ITEM_NOT_FOUND,
-    GA_UNKNOWN_ERROR,
-} GA_Status;
+typedef enum GStatus {
+    GSTAT_INIT,
+    GSTAT_OK,
+    GSTAT_ERROR,
+} GStatus;
 
-typedef enum GA_Error {
-    GA_ERROR_NO_ERROR,
-} GA_Error;
+typedef enum GError {
+    GERROR_NO_ERROR,
+    GERROR_INDEX_OUT_OF_RANGE,
+    GERROR_ITEM_NOT_FOUND,
+    GERROR_UNKNOWN_ERROR,
+} GError;
 
 /**
  * 动态数组
@@ -20,7 +22,8 @@ typedef struct GArray {
     int cap, len;
 } GArray;
 
-const GA_Status GA_GetStatus();
+const GStatus GA_GetStatus();
+const GError GA_GetError();
 GArray *GA_New(int n);
 void GA_FreeAll(GArray *array);
 void GA_FreeAllWith_Raw(GArray *array, void (*mem_free)(void *));

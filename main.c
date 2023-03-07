@@ -41,7 +41,8 @@ void IntToString(Int *num, char *buffer) {
     sprintf(buffer, "%d", num->val);
 }
 
-int main() {
+/* Tests */
+void TestIntArrayIncrement() {
     GArray *intArray = GA_New(16);
     GA_PrintlnInfo(intArray, IntToString);
     for (int i = 1; i <= 40; i++) {
@@ -51,7 +52,9 @@ int main() {
         GA_PrintlnInfo(intArray, IntToString);
     }
     GA_FreeAll(intArray);
+}
 
+void TestStringArrayDailyUse() {
     GArray *strings = GA_New(4);
     GA_PrintlnInfo(strings, StringToStr);
     GA_Append(strings, NewStr("Arch"));
@@ -62,7 +65,6 @@ int main() {
     GA_PrintlnInfo(strings, StringToStr);
     String *bestStr = GA_Get(strings, 4);
     printf("Got: \"%s\" @ %d\n", bestStr->string, GA_FindIndex(strings, bestStr));
-    //GA_KillWith(strings, bestStr, FreeStr);
     GA_Remove(strings, bestStr);
     FreeStr(bestStr);
     GA_PrintlnInfo(strings, StringToStr);
@@ -75,4 +77,10 @@ int main() {
     FreeStr(someStr);
 
     GA_FreeAllWith(strings, FreeStr);
+}
+
+int main() {
+    //TestIntArrayIncrement();
+    TestStringArrayDailyUse();
+    return 0;
 }

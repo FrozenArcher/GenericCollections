@@ -4,14 +4,24 @@
 
 #include "arrays.h"
 
-static GA_Status g_status;
+static GStatus g_status = GSTAT_INIT;
+static GError g_error = GERROR_NO_ERROR;
 
-const GA_Status GA_GetStatus() {
+const GStatus GA_GetStatus() {
     return g_status;
 }
 
-static inline void set_stat(GA_Status stat) {
-    g_status = stat;
+const GError GA_GetError() {
+    return g_error;
+}
+
+static inline void set_stat_ok() {
+    g_status = GSTAT_OK;
+}
+
+static inline void set_stat_error(GError error) {
+    g_status = GSTAT_ERROR;
+    g_error = error;
 }
 
 GArray *GA_New(int n) {
@@ -20,7 +30,7 @@ GArray *GA_New(int n) {
     newArray->buffer = initBuffer;
     newArray->cap = n;
     newArray->len = 0;
-    set_stat(GA_STAT_OK);
+    set_stat_ok();
     return newArray;
 }
 
@@ -35,7 +45,7 @@ void GA_FreeAllWith_Raw(GArray *array, void (*mem_free)(void *)) {
     free(array->buffer);
     free(array);
     array = NULL;
-    set_stat(GA_STAT_OK);
+    set_stat_ok();
 }
 
 void GA_Append(GArray *array, void *item) {
@@ -48,7 +58,7 @@ void GA_Append(GArray *array, void *item) {
     }
     array->buffer[array->len] = item;
     array->len++;
-    set_stat(GA_STAT_OK);
+    set_stat_ok();
 }
 
 void GA_Kill(GArray *array, void *item) {
@@ -58,25 +68,25 @@ void GA_Kill(GArray *array, void *item) {
 void GA_KillWith_Raw(GArray *array, void *item, void (*mem_free)(void *)) {
     int id = GA_FindIndex(array, item);
 
-    if (GA_GetStatus() == GA_STAT_OK) {
+    if (GA_GetStatus() == GSTAT_OK) {
         mem_free(item);
         for (int i = id + 1; i < array->len; i++) {
             array->buffer[i - 1] = array->buffer[i];
         }
         array->len--;
-        set_stat(GA_STAT_OK);
+        set_stat_ok();
     } else {
         //printf("OUT\n");
-        set_stat(GA_STAT_INDEX_OUT_OF_RANGE);
+        set_stat_error(GERROR_INDEX_OUT_OF_RANGE);
     }
 }
 
 void *GA_Get(GArray *array, int index) {
     if (0 <= index && index < array->len) {
-        set_stat(GA_STAT_OK);
+        set_stat_ok();
         return *(array->buffer + index);
     } else {
-        set_stat(GA_STAT_INDEX_OUT_OF_RANGE);
+        set_stat_error(GERROR_INDEX_OUT_OF_RANGE);
         return NULL;
     }
 }
@@ -116,33 +126,34 @@ int GA_FindIndex(GArray *array, void *item) {
         }
     }
     if (id == -1) {
-        set_stat(GA_STAT_INDEX_OUT_OF_RANGE);
+        set_stat_error(GERROR_ITEM_NOT_FOUND);
     } else {
-        set_stat(GA_STAT_OK);
+        set_stat_ok();
     }
     return id;
 }
 
 void *GA_RemoveAt(GArray *array, int index) {
     void *item = GA_Get(array, index);
-    if (GA_GetStatus() == GA_STAT_OK) {
+    if (GA_GetStatus() == GSTAT_OK) {
         item = array->buffer[index];
         for (int i = index + 1; i < array->len; i++) {
             array->buffer[i - 1] = array->buffer[i];
         }
         array->len--;
-        set_stat(GA_STAT_OK);
+        set_stat_ok();
     } else {
-        set_stat(GA_STAT_INDEX_OUT_OF_RANGE);
+        set_stat_error(GERROR_ITEM_NOT_FOUND);
     }
     return item;
 }
 
 void GA_Remove(GArray *array, void *item) {
     int index = GA_FindIndex(array, item);
-    if (GA_GetStatus() == GA_STAT_OK) {
+    if (GA_GetStatus() == GSTAT_OK) {
         GA_RemoveAt(array, index);
+        set_stat_ok();
     } else {
-        set_stat(GA_STAT_INDEX_OUT_OF_RANGE);
+        set_stat_error(GERROR_ITEM_NOT_FOUND);
     }
 }
