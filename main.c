@@ -62,12 +62,17 @@ int main() {
     GA_PrintlnInfo(strings, StringToStr);
     String *bestStr = GA_Get(strings, 4);
     printf("Got: \"%s\" @ %d\n", bestStr->string, GA_FindIndex(strings, bestStr));
-    GA_KillWith(strings, bestStr, FreeStr);
+    //GA_KillWith(strings, bestStr, FreeStr);
+    GA_Remove(strings, bestStr);
+    FreeStr(bestStr);
     GA_PrintlnInfo(strings, StringToStr);
     GA_Append(strings, NewStr("worst"));
     GA_PrintlnInfo(strings, StringToStr);
     GA_KillWith(strings, GA_Get(strings, 0), FreeStr);
     GA_PrintlnInfo(strings, StringToStr);
+    String *someStr = GA_RemoveAt(strings, 2);
+    GA_Println(strings, StringToStr);
+    FreeStr(someStr);
 
     GA_FreeAllWith(strings, FreeStr);
 }

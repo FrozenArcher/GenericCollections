@@ -1,22 +1,26 @@
 #ifndef GC_ARRAYS_H
 #define GC_ARRAYS_H
 
-typedef enum GStatus {
-    GC_STAT_OK,
-    GC_STAT_INDEX_OUT_OF_RANGE,
-    GC_UNKNOWN_ERROR,
-} GStatus;
+typedef enum GA_Status {
+    GA_STAT_OK,
+    GA_STAT_INDEX_OUT_OF_RANGE,
+    GA_STAT_ITEM_NOT_FOUND,
+    GA_UNKNOWN_ERROR,
+} GA_Status;
+
+typedef enum GA_Error {
+    GA_ERROR_NO_ERROR,
+} GA_Error;
 
 /**
  * 动态数组
- * 托管指针的生命周期
  */
 typedef struct GArray {
     void **buffer;
     int cap, len;
 } GArray;
 
-const GStatus GA_GetStatus();
+const GA_Status GA_GetStatus();
 GArray *GA_New(int n);
 void GA_FreeAll(GArray *array);
 void GA_FreeAllWith_Raw(GArray *array, void (*mem_free)(void *));
@@ -26,9 +30,8 @@ void GA_KillWith_Raw(GArray *array, void *item, void (*mem_free)(void *));
 void *GA_Get(GArray *array, int index);
 void GA_Print_Raw(GArray *array, void (*str)(void*, char*), int endline, int info);
 int GA_FindIndex(GArray *array, void *item);
-
-// void GA_Remove()
-// void *GA_RemoveAt()
+void *GA_RemoveAt(GArray *array, int index);
+void GA_Remove(GArray *array, void *item);
 // void *GA_Replace()
 // void *GA_ReplaceAt()
 // void GA_AddAt()
