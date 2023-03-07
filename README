@@ -3,4 +3,3 @@ TODO:
 - Add GC_ArrayChangeAt()
 - Add GC_ArrayAddAt()
 - Add GC_ArrayRemoveAt()
-- Rename functions to more friendly ones

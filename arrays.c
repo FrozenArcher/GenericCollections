@@ -24,11 +24,11 @@ GArray *GA_New(int n) {
     return newArray;
 }
 
-void GA_Free(GArray *array) {
-    GA_FreeWith_Raw(array, free);
+void GA_FreeAll(GArray *array) {
+    GA_FreeAllWith_Raw(array, free);
 }
 
-void GA_FreeWith_Raw(GArray *array, void (*mem_free)(void *)) {
+void GA_FreeAllWith_Raw(GArray *array, void (*mem_free)(void *)) {
     for (int i = 0; i < array->len; i++) {
         mem_free(array->buffer[i]);
     }
@@ -51,11 +51,11 @@ void GA_Append(GArray *array, void *item) {
     set_stat(GC_STAT_OK);
 }
 
-void GA_Remove(GArray *array, void *item) {
-    GA_RemoveWith_Raw(array, item, free);
+void GA_Kill(GArray *array, void *item) {
+    GA_KillWith_Raw(array, item, free);
 }
 
-void GA_RemoveWith_Raw(GArray *array, void *item, void (*mem_free)(void *)) {
+void GA_KillWith_Raw(GArray *array, void *item, void (*mem_free)(void *)) {
     int id = GA_FindIndex(array, item);
 
     if (GA_GetStatus() == GC_STAT_OK) {

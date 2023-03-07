@@ -50,7 +50,7 @@ int main() {
         GA_Append(intArray, newInt);
         GA_PrintlnInfo(intArray, IntToString);
     }
-    GA_Free(intArray);
+    GA_FreeAll(intArray);
 
     GArray *strings = GA_New(4);
     GA_PrintlnInfo(strings, StringToStr);
@@ -62,12 +62,12 @@ int main() {
     GA_PrintlnInfo(strings, StringToStr);
     String *bestStr = GA_Get(strings, 4);
     printf("Got: \"%s\" @ %d\n", bestStr->string, GA_FindIndex(strings, bestStr));
-    GA_RemoveWith(strings, bestStr, FreeStr);
+    GA_KillWith(strings, bestStr, FreeStr);
     GA_PrintlnInfo(strings, StringToStr);
     GA_Append(strings, NewStr("worst"));
     GA_PrintlnInfo(strings, StringToStr);
-    GA_RemoveWith(strings, GA_Get(strings, 0), FreeStr);
+    GA_KillWith(strings, GA_Get(strings, 0), FreeStr);
     GA_PrintlnInfo(strings, StringToStr);
 
-    GA_FreeWith(strings, FreeStr);
+    GA_FreeAllWith(strings, FreeStr);
 }
