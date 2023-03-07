@@ -4,18 +4,18 @@
 
 #include "arrays.h"
 
-static GC_Status g_status;
+static GStatus g_status;
 
-const GC_Status GC_GetStatus() {
+const GStatus GA_GetStatus() {
     return g_status;
 }
 
-static inline void set_stat(GC_Status stat) {
+static inline void set_stat(GStatus stat) {
     g_status = stat;
 }
 
-GC_Array *GC_NewArray(int n) {
-    GC_Array *newArray = malloc(sizeof(GC_Array));
+GArray *GA_New(int n) {
+    GArray *newArray = malloc(sizeof(GArray));
     void **initBuffer = malloc(sizeof(void *) * n);
     newArray->buffer = initBuffer;
     newArray->cap = n;
@@ -24,11 +24,11 @@ GC_Array *GC_NewArray(int n) {
     return newArray;
 }
 
-void GC_ArrayFree(GC_Array *array) {
-    GC_ArrayFreeWith_Raw(array, free);
+void GA_Free(GArray *array) {
+    GA_FreeWith_Raw(array, free);
 }
 
-void GC_ArrayFreeWith_Raw(GC_Array *array, void (*mem_free)(void *)) {
+void GA_FreeWith_Raw(GArray *array, void (*mem_free)(void *)) {
     for (int i = 0; i < array->len; i++) {
         mem_free(array->buffer[i]);
     }
@@ -38,7 +38,7 @@ void GC_ArrayFreeWith_Raw(GC_Array *array, void (*mem_free)(void *)) {
     set_stat(GC_STAT_OK);
 }
 
-void GC_ArrayAppend(GC_Array *array, void *item) {
+void GA_Append(GArray *array, void *item) {
     if (array->len + 1 > array->cap) {
         void **newBuffer = malloc(sizeof(void *) * array->cap * 2);
         memcpy(newBuffer, array->buffer, sizeof(void *) * array->len);
@@ -51,14 +51,14 @@ void GC_ArrayAppend(GC_Array *array, void *item) {
     set_stat(GC_STAT_OK);
 }
 
-void GC_ArrayRemove(GC_Array *array, void *item) {
-    GC_ArrayRemoveWith(array, item, free);
+void GA_Remove(GArray *array, void *item) {
+    GA_RemoveWith_Raw(array, item, free);
 }
 
-void GC_ArrayRemoveWith_Raw(GC_Array *array, void *item, void (*mem_free)(void *)) {
-    int id = GC_ArrayFindIndex(array, item);
+void GA_RemoveWith_Raw(GArray *array, void *item, void (*mem_free)(void *)) {
+    int id = GA_FindIndex(array, item);
 
-    if (GC_GetStatus() == GC_STAT_OK) {
+    if (GA_GetStatus() == GC_STAT_OK) {
         mem_free(item);
         for (int i = id + 1; i < array->len; i++) {
             array->buffer[i - 1] = array->buffer[i];
@@ -71,7 +71,7 @@ void GC_ArrayRemoveWith_Raw(GC_Array *array, void *item, void (*mem_free)(void *
     }
 }
 
-void *GC_ArrayGet(GC_Array *array, int index) {
+void *GA_Get(GArray *array, int index) {
     if (0 <= index && index < array->len) {
         set_stat(GC_STAT_OK);
         return *(array->buffer + index);
@@ -81,7 +81,7 @@ void *GC_ArrayGet(GC_Array *array, int index) {
     }
 }
 
-void GC_ArrayPrint_Raw(GC_Array *array, void (*str)(void*, char*), int endline, int info) {
+void GA_Print_Raw(GArray *array, void (*str)(void*, char*), int endline, int info) {
     char buffer[256];
     void *item;
     if (info) {
@@ -92,7 +92,7 @@ void GC_ArrayPrint_Raw(GC_Array *array, void (*str)(void*, char*), int endline, 
         printf("]");
     } else {
         for (int i = 0; i < array->len; i++) {
-            item = GC_ArrayGet(array, i);
+            item = GA_Get(array, i);
             if (i == array->len - 1) {
                 str(item, buffer);
                 printf("%s]", buffer);
@@ -107,7 +107,7 @@ void GC_ArrayPrint_Raw(GC_Array *array, void (*str)(void*, char*), int endline, 
     }
 }
 
-int GC_ArrayFindIndex(GC_Array *array, void *item) {
+int GA_FindIndex(GArray *array, void *item) {
     int id = -1;
     for (int i = 0; i < array->len; i++) {
         if (array->buffer[i] == item) {

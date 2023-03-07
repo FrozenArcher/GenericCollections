@@ -1,7 +1,8 @@
-#include "arrays.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "arrays.h"
 
 typedef struct Int {
     int val;
@@ -41,32 +42,32 @@ void IntToString(Int *num, char *buffer) {
 }
 
 int main() {
-    GC_Array *intArray = GC_NewArray(16);
-    GC_ArrayPrintlnInfo(intArray, IntToString);
+    GArray *intArray = GA_New(16);
+    GA_PrintlnInfo(intArray, IntToString);
     for (int i = 1; i <= 40; i++) {
         Int *newInt = NewInt(i);
         printf("Append: NewInt.val = %d\n", newInt->val);
-        GC_ArrayAppend(intArray, newInt);
-        GC_ArrayPrintlnInfo(intArray, IntToString);
+        GA_Append(intArray, newInt);
+        GA_PrintlnInfo(intArray, IntToString);
     }
-    GC_ArrayFree(intArray);
+    GA_Free(intArray);
 
-    GC_Array *strings = GC_NewArray(4);
-    GC_ArrayPrintlnInfo(strings, StringToStr);
-    GC_ArrayAppend(strings, NewStr("Arch"));
-    GC_ArrayAppend(strings, NewStr("Linux"));
-    GC_ArrayAppend(strings, NewStr("is"));
-    GC_ArrayAppend(strings, NewStr("the"));
-    GC_ArrayAppend(strings, NewStr("best"));
-    GC_ArrayPrintlnInfo(strings, StringToStr);
-    String *bestStr = GC_ArrayGet(strings, 4);
-    printf("Got: \"%s\" @ %d\n", bestStr->string, GC_ArrayFindIndex(strings, bestStr));
-    GC_ArrayRemoveWith(strings, bestStr, FreeStr);
-    GC_ArrayPrintlnInfo(strings, StringToStr);
-    GC_ArrayAppend(strings, NewStr("worst"));
-    GC_ArrayPrintlnInfo(strings, StringToStr);
-    GC_ArrayRemoveWith(strings, GC_ArrayGet(strings, 0), FreeStr);
-    GC_ArrayPrintlnInfo(strings, StringToStr);
+    GArray *strings = GA_New(4);
+    GA_PrintlnInfo(strings, StringToStr);
+    GA_Append(strings, NewStr("Arch"));
+    GA_Append(strings, NewStr("Linux"));
+    GA_Append(strings, NewStr("is"));
+    GA_Append(strings, NewStr("the"));
+    GA_Append(strings, NewStr("best"));
+    GA_PrintlnInfo(strings, StringToStr);
+    String *bestStr = GA_Get(strings, 4);
+    printf("Got: \"%s\" @ %d\n", bestStr->string, GA_FindIndex(strings, bestStr));
+    GA_RemoveWith(strings, bestStr, FreeStr);
+    GA_PrintlnInfo(strings, StringToStr);
+    GA_Append(strings, NewStr("worst"));
+    GA_PrintlnInfo(strings, StringToStr);
+    GA_RemoveWith(strings, GA_Get(strings, 0), FreeStr);
+    GA_PrintlnInfo(strings, StringToStr);
 
-    GC_ArrayFreeWith(strings, FreeStr);
+    GA_FreeWith(strings, FreeStr);
 }
