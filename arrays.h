@@ -20,6 +20,8 @@ typedef enum GError {
 typedef struct GArray {
     void **buffer;
     int cap, len;
+
+    //void (*to_string)(void *, char *);
 } GArray;
 
 const GStatus GA_GetStatus();
@@ -35,13 +37,12 @@ void GA_Print_Raw(GArray *array, void (*str)(void*, char*), int endline, int inf
 int GA_FindIndex(GArray *array, void *item);
 void *GA_RemoveAt(GArray *array, int index);
 void GA_Remove(GArray *array, void *item);
-// void *GA_Replace()
-// void *GA_ReplaceAt()
-// void GA_AddAt()
-// void GA_Swap()
-// void GA_SwapAt()
-
-// const void * const GA_GetBuffer() [*]
+void GA_Replace(GArray *array, void *old_item, void *new_item);
+void *GA_ReplaceAt(GArray *array, int index, void *new_item);
+void GA_AddAt(GArray *array, int index, void *item);
+void GA_Swap(GArray *array, void *item_1, void *item_2);
+void GA_SwapAt(GArray *array, int index_1, int index_2);
+// const void * const GA_GetBuffer(GArray *array);
 
 #define GA_PrintInfo(array, str) GA_Print_Raw((array), (void (*)(void *, char *))(str), 0, 1)
 #define GA_PrintlnInfo(array, str) GA_Print_Raw((array), (void (*)(void *, char *))(str), 1, 1)

@@ -157,3 +157,63 @@ void GA_Remove(GArray *array, void *item) {
         set_stat_error(GERROR_ITEM_NOT_FOUND);
     }
 }
+
+void GA_Replace(GArray *array, void *old_item, void *new_item) {
+    int index = GA_FindIndex(array, old_item);
+    if (GA_GetStatus() == GSTAT_OK) {
+        GA_ReplaceAt(array, index, new_item);
+        set_stat_ok();
+        return;
+    } else {
+        set_stat_error(GERROR_ITEM_NOT_FOUND);
+        return;
+    }
+}
+
+void *GA_ReplaceAt(GArray *array, int index, void *new_item) {
+    if (0 <= index && index < array->len) {
+        void *old_item = array->buffer[index];
+        array->buffer[index] = new_item;
+        set_stat_ok();
+        return old_item;
+    } else {
+        set_stat_error(GERROR_INDEX_OUT_OF_RANGE);
+        return NULL;
+    }
+}
+
+void GA_Swap(GArray *array, void *item_1, void *item_2) {
+    int i1 = GA_FindIndex(array, item_1);
+    if (GA_GetStatus() == GSTAT_OK) {
+        int i2 = GA_FindIndex(array, item_2);
+        if (GA_GetStatus() == GSTAT_OK) {
+            GA_SwapAt(array, i1, i2);
+        } else {
+            set_stat_error(GERROR_ITEM_NOT_FOUND);
+            return;
+        }
+    } else {
+        set_stat_error(GERROR_ITEM_NOT_FOUND);
+        return;
+    }
+}
+void GA_SwapAt(GArray *array, int index_1, int index_2) {
+    if ((0 <= index_1 && index_1 < array->len) && (0 <= index_2 && index_2 < array->len)) {
+        void *t_item = array->buffer[index_1];
+        array->buffer[index_1] = array->buffer[index_2];
+        array->buffer[index_2] = t_item;
+        set_stat_ok();
+        return;
+    } else {
+        set_stat_error(GERROR_INDEX_OUT_OF_RANGE);
+        return;
+    }
+}
+
+void GA_AddAt(GArray *array, int index, void *item) {
+    if (0 <= index && index < array->len + 1) {
+        for (int i = array->len; i >= index; i--) {
+            // TODO
+        }
+    }
+}

@@ -75,7 +75,17 @@ void TestStringArrayDailyUse() {
     String *someStr = GA_RemoveAt(strings, 2);
     GA_Println(strings, StringToStr);
     FreeStr(someStr);
+    String *mystr = GA_Get(strings, 2);
+    String *newString = NewStr("beeeest");
+    GA_Replace(strings, mystr, newString);
+    GA_Println(strings, StringToStr);
+    FreeStr(mystr);
+    GA_SwapAt(strings, 0, 1);
+    GA_Println(strings, StringToStr);
+    GA_Swap(strings, GA_Get(strings, 0), GA_Get(strings, 1));
+    GA_Println(strings, StringToStr);
 
+    puts("");
     GA_FreeAllWith(strings, FreeStr);
 }
 
