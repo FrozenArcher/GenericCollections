@@ -17,6 +17,7 @@ const GError GA_GetError() {
 
 static inline void set_stat_ok() {
     g_status = GSTAT_OK;
+    g_error = GERROR_NO_ERROR;
 }
 
 static inline void set_stat_error(GError error) {
