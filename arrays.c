@@ -7,14 +7,6 @@
 static GStatus g_status = GSTAT_INIT;
 static GError g_error = GERROR_NO_ERROR;
 
-const GStatus GA_GetStatus() {
-    return g_status;
-}
-
-const GError GA_GetError() {
-    return g_error;
-}
-
 static inline void set_stat_ok() {
     g_status = GSTAT_OK;
     g_error = GERROR_NO_ERROR;
@@ -31,6 +23,14 @@ static void ga_inc_cap(GArray *array) {
     free(array->buffer);
     array->buffer = newBuffer;
     array->cap *= 2;
+}
+
+const GStatus GA_GetStatus() {
+    return g_status;
+}
+
+const GError GA_GetError() {
+    return g_error;
 }
 
 GArray *GA_New(int n) {
@@ -81,7 +81,6 @@ void GA_KillWith_Raw(GArray *array, void *item, void (*mem_free)(void *)) {
         array->len--;
         set_stat_ok();
     } else {
-        //printf("OUT\n");
         set_stat_error(GERROR_INDEX_OUT_OF_RANGE);
     }
 }
@@ -202,6 +201,7 @@ void GA_Swap(GArray *array, void *item_1, void *item_2) {
         return;
     }
 }
+
 void GA_SwapAt(GArray *array, int index_1, int index_2) {
     if ((0 <= index_1 && index_1 < array->len) && (0 <= index_2 && index_2 < array->len)) {
         void *t_item = array->buffer[index_1];
