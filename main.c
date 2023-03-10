@@ -84,6 +84,9 @@ void TestStringArrayDailyUse() {
     GA_Println(strings, StringToStr);
     GA_Swap(strings, GA_Get(strings, 0), GA_Get(strings, 1));
     GA_Println(strings, StringToStr);
+    GA_AddAt(strings, 0, NewStr("Gentoo"));
+    GA_AddAt(strings, 3, NewStr("the"));
+    GA_Println(strings, StringToStr);
 
     puts("");
     GA_FreeAllWith(strings, FreeStr);

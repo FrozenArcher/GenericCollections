@@ -25,6 +25,14 @@ static inline void set_stat_error(GError error) {
     g_error = error;
 }
 
+static void ga_inc_cap(GArray *array) {
+    void **newBuffer = malloc(sizeof(void *) * array->cap * 2);
+    memcpy(newBuffer, array->buffer, sizeof(void *) * array->len);
+    free(array->buffer);
+    array->buffer = newBuffer;
+    array->cap *= 2;
+}
+
 GArray *GA_New(int n) {
     GArray *newArray = malloc(sizeof(GArray));
     void **initBuffer = malloc(sizeof(void *) * n);
@@ -51,11 +59,7 @@ void GA_FreeAllWith_Raw(GArray *array, void (*mem_free)(void *)) {
 
 void GA_Append(GArray *array, void *item) {
     if (array->len + 1 > array->cap) {
-        void **newBuffer = malloc(sizeof(void *) * array->cap * 2);
-        memcpy(newBuffer, array->buffer, sizeof(void *) * array->len);
-        free(array->buffer);
-        array->buffer = newBuffer;
-        array->cap *= 2;
+        ga_inc_cap(array);
     }
     array->buffer[array->len] = item;
     array->len++;
@@ -212,9 +216,19 @@ void GA_SwapAt(GArray *array, int index_1, int index_2) {
 }
 
 void GA_AddAt(GArray *array, int index, void *item) {
-    if (0 <= index && index < array->len + 1) {
-        for (int i = array->len; i >= index; i--) {
-            // TODO
+    if (0 <= index && index <= array->len) {
+        if (array->len + 1 > array->cap) {
+            ga_inc_cap(array);
         }
+        for (int i = array->len; i > index; i--) {
+            array->buffer[i] = array->buffer[i - 1];
+        }
+        array->buffer[index] = item;
+        array->len++;
+        set_stat_ok();
+        return;
+    } else {
+        set_stat_error(GERROR_INDEX_OUT_OF_RANGE);
+        return;
     }
 }
