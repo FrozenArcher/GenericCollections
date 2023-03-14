@@ -1,6 +1,4 @@
 TODO:
-- new from config
-- built-in mem_free
 - GA_Empty()
 - GA_Copy()
 - GA_Clone()
