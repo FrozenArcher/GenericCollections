@@ -1,6 +1,8 @@
 #ifndef GC_ARRAYS_H
 #define GC_ARRAYS_H
 
+/* Types */
+
 /**
  * @brief 执行状态，初始、OK或者错误。在第一次调用之前一直是初始状态。
  */
@@ -30,6 +32,8 @@ typedef struct GArray {
     void (*to_string)(void *, char *);
     void (*item_free)(void *);
 } GArray;
+
+/* Functions */
 
 /**
  * @brief 获取数组的容量。
@@ -65,6 +69,8 @@ const GError GA_GetError();
  * @brief 在堆内存创建新数组。
  * 
  * @param n 初始大小，最好是2的n次方
+ * @param to_string 将第一个参数（元素）转换成字符串写入第二个参数（字符缓存）的函数
+ * @param item_free 元素内存释放函数
  * @return 创建的数组
  */
 GArray *GA_New_Raw(int n, void (*to_string)(void *, char *), void (*item_free)(void *));
@@ -200,13 +206,62 @@ void GA_Swap(GArray *array, void *item_1, void *item_2);
  */
 void GA_SwapAt(GArray *array, int index_1, int index_2);
 
+/* Wrappers */
+
+/**
+ * @brief 在堆内存创建新数组。
+ * 
+ * @param n 初始大小，最好是2的n次方
+ * @param to_string 将第一个参数（元素）转换成字符串写入第二个参数（字符缓存）的函数
+ * @param item_free 元素内存释放函数
+ * @return 创建的数组
+ */
 #define GA_New(n, to_string, item_free)\
     GA_New_Raw(n, (void(*)(void*, char*))to_string, (void(*)(void *))item_free)
-#define GA_PrintInfo(array) GA_Print_Raw((array), 0, 1)
-#define GA_PrintlnInfo(array) GA_Print_Raw((array), 1, 1)
-#define GA_Print(array) GA_Print_Raw((array), 0, 0)
-#define GA_Println(array) GA_Print_Raw((array), 1, 0)
+
+/**
+ * @brief 输出数组，带有信息，不换行。
+ * 
+ * @param array 目标数组
+ */
+void GA_PrintInfo(GArray *array);
+
+/**
+ * @brief 输出数组，带有信息，换行。
+ * 
+ * @param array 目标数组
+ */
+void GA_PrintlnInfo(GArray *array);
+
+/**
+ * @brief 输出数组，仅输出元素，不换行。
+ * 
+ * @param array 目标数组
+ */
+void GA_Print(GArray *array);
+
+/**
+ * @brief 输出数组，仅输出元素，不换行。
+ * 
+ * @param array 目标数组
+ */
+void GA_Println(GArray *array);
+
+/**
+ * @brief 将元素item从数组中移除并释放，使用自定义释放函数。
+ * 
+ * @param array 目标数组
+ * @param item 待移除元素
+ * @param mem_free 元素释放函数
+ */
 #define GA_KillWith(array, item, mem_free) GA_KillWith_Raw((array), (item), (void (*)(void *))(mem_free))
+
+/**
+ * @brief 按顺序释放全部元素内存，并释放数组内存，使用自定义释放函数。
+ * 
+ * @param array 目标数组
+ * @param mem_free 元素释放函数
+ */
 #define GA_FreeAllWith(array, mem_free) GA_FreeAllWith_Raw((array), (void (*)(void *))(mem_free))
 
 #endif

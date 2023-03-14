@@ -246,3 +246,21 @@ void GA_AddAt(GArray *array, int index, void *item) {
         return;
     }
 }
+
+/* GA_Print wrappers */
+
+void GA_PrintInfo(GArray *array) {
+    GA_Print_Raw(array, 0, 1);
+}
+
+void GA_PrintlnInfo(GArray *array) {
+    GA_Print_Raw(array, 1, 1);
+}
+
+void GA_Print(GArray *array) {
+    GA_Print_Raw(array, 0, 0);
+}
+
+void GA_Println(GArray *array)  {
+    GA_Print_Raw(array, 1, 0);
+}
