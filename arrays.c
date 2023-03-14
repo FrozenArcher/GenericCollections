@@ -33,15 +33,18 @@ const GError GA_GetError() {
     return g_error;
 }
 
-GArray *GA_New(int n, void (*to_string)(void *, char *)) {
+GArray *GA_New_Raw(int n, void (*to_string)(void *, char *), void (*item_free)(void *)) {
     GArray *newArray = malloc(sizeof(GArray));
     void **initBuffer = malloc(sizeof(void *) * n);
     newArray->buffer = initBuffer;
     newArray->cap = n;
     newArray->len = 0;
+    newArray->to_string = to_string;
 
-    if (to_string != NULL) {
-        newArray->to_string = to_string;
+    if (item_free == NULL) {
+        newArray->item_free = free;
+    } else {
+        newArray->item_free = item_free;
     }
 
     set_stat_ok();
@@ -49,7 +52,7 @@ GArray *GA_New(int n, void (*to_string)(void *, char *)) {
 }
 
 void GA_FreeAll(GArray *array) {
-    GA_FreeAllWith_Raw(array, free);
+    GA_FreeAllWith_Raw(array, array->item_free);
 }
 
 void GA_FreeAllWith_Raw(GArray *array, void (*mem_free)(void *)) {
@@ -72,7 +75,7 @@ void GA_Append(GArray *array, void *item) {
 }
 
 void GA_Kill(GArray *array, void *item) {
-    GA_KillWith_Raw(array, item, free);
+    GA_KillWith_Raw(array, item, array->item_free);
 }
 
 void GA_KillWith_Raw(GArray *array, void *item, void (*mem_free)(void *)) {
@@ -105,7 +108,7 @@ void GA_Print_Raw(GArray *array, int endline, int info) {
         set_stat_error(GERROR_ITEM_TO_STRING_NOT_FOUND);
         return;
     }
-    
+
     char buffer[256];
     void *item;
     if (info) {

@@ -28,6 +28,7 @@ typedef struct GArray {
     void **buffer;
     int cap, len;
     void (*to_string)(void *, char *);
+    void (*item_free)(void *);
 } GArray;
 
 /**
@@ -66,7 +67,7 @@ const GError GA_GetError();
  * @param n 初始大小，最好是2的n次方
  * @return 创建的数组
  */
-GArray *GA_New(int n, void (*to_string)(void *, char *));
+GArray *GA_New_Raw(int n, void (*to_string)(void *, char *), void (*item_free)(void *));
 
 /**
  * @brief 按顺序释放全部元素内存，并释放数组内存。
@@ -199,6 +200,8 @@ void GA_Swap(GArray *array, void *item_1, void *item_2);
  */
 void GA_SwapAt(GArray *array, int index_1, int index_2);
 
+#define GA_New(n, to_string, item_free)\
+    GA_New_Raw(n, (void(*)(void*, char*))to_string, (void(*)(void *))item_free)
 #define GA_PrintInfo(array) GA_Print_Raw((array), 0, 1)
 #define GA_PrintlnInfo(array) GA_Print_Raw((array), 1, 1)
 #define GA_Print(array) GA_Print_Raw((array), 0, 0)
