@@ -43,50 +43,50 @@ void IntToString(Int *num, char *buffer) {
 
 /* Tests */
 void TestIntArrayIncrement() {
-    GArray *intArray = GA_New(16);
-    GA_PrintlnInfo(intArray, IntToString);
+    GArray *intArray = GA_New(16, IntToString);
+    GA_PrintlnInfo(intArray);
     for (int i = 1; i <= 40; i++) {
         Int *newInt = NewInt(i);
         printf("Append: NewInt.val = %d\n", newInt->val);
         GA_Append(intArray, newInt);
-        GA_PrintlnInfo(intArray, IntToString);
+        GA_PrintlnInfo(intArray);
     }
     GA_FreeAll(intArray);
 }
 
 void TestStringArrayDailyUse() {
-    GArray *strings = GA_New(4);
-    GA_PrintlnInfo(strings, StringToStr);
+    GArray *strings = GA_New(4, StringToStr);
+    GA_PrintlnInfo(strings);
     GA_Append(strings, NewStr("Arch"));
     GA_Append(strings, NewStr("Linux"));
     GA_Append(strings, NewStr("is"));
     GA_Append(strings, NewStr("the"));
     GA_Append(strings, NewStr("best"));
-    GA_PrintlnInfo(strings, StringToStr);
+    GA_PrintlnInfo(strings);
     String *bestStr = GA_Get(strings, 4);
     printf("Got: \"%s\" @ %d\n", bestStr->string, GA_FindIndex(strings, bestStr));
     GA_Remove(strings, bestStr);
     FreeStr(bestStr);
-    GA_PrintlnInfo(strings, StringToStr);
+    GA_PrintlnInfo(strings);
     GA_Append(strings, NewStr("worst"));
-    GA_PrintlnInfo(strings, StringToStr);
+    GA_PrintlnInfo(strings);
     GA_KillWith(strings, GA_Get(strings, 0), FreeStr);
-    GA_PrintlnInfo(strings, StringToStr);
+    GA_PrintlnInfo(strings);
     String *someStr = GA_RemoveAt(strings, 2);
-    GA_Println(strings, StringToStr);
+    GA_Println(strings);
     FreeStr(someStr);
     String *mystr = GA_Get(strings, 2);
     String *newString = NewStr("beeeest");
     GA_Replace(strings, mystr, newString);
-    GA_Println(strings, StringToStr);
+    GA_Println(strings);
     FreeStr(mystr);
     GA_SwapAt(strings, 0, 1);
-    GA_Println(strings, StringToStr);
+    GA_Println(strings);
     GA_Swap(strings, GA_Get(strings, 0), GA_Get(strings, 1));
-    GA_Println(strings, StringToStr);
+    GA_Println(strings);
     GA_AddAt(strings, 0, NewStr("Gentoo"));
     GA_AddAt(strings, 3, NewStr("the"));
-    GA_Println(strings, StringToStr);
+    GA_Println(strings);
 
     puts("");
     GA_FreeAllWith(strings, FreeStr);

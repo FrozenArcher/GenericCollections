@@ -1,6 +1,6 @@
 TODO:
 - new from config
-- built-in to_string and mem_free, remove the macros
+- built-in mem_free
 - GA_Empty()
 - GA_Copy()
 - GA_Clone()

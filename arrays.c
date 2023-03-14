@@ -33,12 +33,17 @@ const GError GA_GetError() {
     return g_error;
 }
 
-GArray *GA_New(int n) {
+GArray *GA_New(int n, void (*to_string)(void *, char *)) {
     GArray *newArray = malloc(sizeof(GArray));
     void **initBuffer = malloc(sizeof(void *) * n);
     newArray->buffer = initBuffer;
     newArray->cap = n;
     newArray->len = 0;
+
+    if (to_string != NULL) {
+        newArray->to_string = to_string;
+    }
+
     set_stat_ok();
     return newArray;
 }
@@ -95,7 +100,12 @@ void *GA_Get(GArray *array, int index) {
     }
 }
 
-void GA_Print_Raw(GArray *array, void (*str)(void*, char*), int endline, int info) {
+void GA_Print_Raw(GArray *array, int endline, int info) {
+    if (array->to_string == NULL) {
+        set_stat_error(GERROR_ITEM_TO_STRING_NOT_FOUND);
+        return;
+    }
+    
     char buffer[256];
     void *item;
     if (info) {
@@ -108,10 +118,10 @@ void GA_Print_Raw(GArray *array, void (*str)(void*, char*), int endline, int inf
         for (int i = 0; i < array->len; i++) {
             item = GA_Get(array, i);
             if (i == array->len - 1) {
-                str(item, buffer);
+                array->to_string(item, buffer);
                 printf("%s]", buffer);
             } else {
-                str(item, buffer);
+                array->to_string(item, buffer);
                 printf("%s, ", buffer);
             }
         }
@@ -119,6 +129,7 @@ void GA_Print_Raw(GArray *array, void (*str)(void*, char*), int endline, int inf
     if (endline) {
         printf("\n");
     }
+    set_stat_ok();
 }
 
 int GA_FindIndex(GArray *array, void *item) {
